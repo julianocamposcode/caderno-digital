@@ -115,6 +115,343 @@
 				</div>
 			</div>
 		</form>
+		<p>Curso CRUD
+
+  Primeiramente vamos fazer o dowload do projeto em: https://github.com/alura-cursos/2016-JS-na-web-crud-com-JavaScript-assincrono/archive/projeto_inicial.zip
+
+Usaremos o ajax para fazer essa cominicação entre a aplicação e a API para obter os dados.Em admin criamos a pasta service dentro de service criamos o arquivo cliente-service.js. Para fazer essa comunicação usaremos alguns métodos e quem vai fornecer esses métodos pra gente vai ser o objeto XMLHttpRequest usando new XMLHttpRequest() >> const http = new XMLHttpRequest() >> para abrir a comunicação entre a aplicação e a API vamos usar o método open que recebe 2 argumentos o primeiro é oq eu vou pedir pra ele, e o segundo é o endereço de para onde eu quero enviar >> http.open("GET", 'http://localhost:3000/profile') >> depois >> http.send() para enviar os dados depois linkamos com o aqrquivo HTML. Depois que ele fizer a requisição devemos indicar oq ele deve fazer com a resposta do servidor usarerom onload >>
+
+http.onload = () => {
+const data = http.response >> resposta do servidor
+}
+
+imprimindo a resposta no console nos deparamos com um erro ERR_CONNECTION_REFUSED ele não conseguiu fazer a comunicação, isso prq localhost:3000 não existe. Estamos simulando uma API (mocando dados) e para fazer essas simulaçôes vamos usar o json-server que esta listado nas dependencias do projeto em package.json. No terminal em ADMIN fazemos nmp install para baixar as dependencias.Para ele rodar fazemos o clássico watch e no console vemos o conteúdo do arquivo db.json. 
+
+Próximo passo é exibir ele no corpo da tabela, para isso temos que pegar os dados da API e colocá-los no HTML criando um template que vai receber esses dados, em lista_cliente.html temos o seguinte código >>
+ 
+
+<td class="td" data-td>${nome}</td>
+<td>${email}</td>
+<td>
+  <ul class="tabela__botoes-controle">
+      <li><a href="../telas/edita_cliente.html" class="botao-simples botao-simples--editar">Editar</a></li>
+      <li><button class="botao-simples botao-simples--excluir" type="button">Excluir</button></li>
+  </ul>
+</td> 
+
+o copiamos mas embaixo de thead colocamos >> 
+
+<tbody data-tabela>
+<tbody/>
+,
+Em cliente service colamos o código em cima do que já tinhamos digitado, e para o js reconhecer criamos uma função >>
+
+const criaNovaLinha = () => {
+const conteudo = `<td class="td" data-td>${nome}</td>
+<td>${email}</td>
+<td>
+  <ul class="tabela__botoes-controle">
+      <li><a href="../telas/edita_cliente.html" class="botao-simples botao-simples--editar">Editar</a></li>
+      <li><button class="botao-simples botao-simples--excluir" type="button">Excluir</button></li>
+  </ul>
+</td> 
+`
+}
+
+Na const conteudo usamos o template literals para funcionar, ele reconhece se tiver ${} que é um js isso acontece com o nome e email que logo a frente usaremos para pegar os dados da API esses dados colocamos como parâmetro da função >>
+
+const criaNovaLinha = (nome, email) => {}
+
+E como vamos criar uma linha vamos usar >> 
+
+const linhaNovoCliente = document.querySelector('tr')
+
+para colocar o conteúdo dentro da tr usamos o inner.HTML , entao embaixo do aconto grave fazemos>>
+
+linhaNovoCliente.innerHTMl = conteudo
+return linhaNovoCliente >> por ser uma função
+
+Usamos o data-tabela para refenciar a tabela criando uma const querySelector,  para colocar a linha dentro da tabela usamos o append >>
+
+tabela.appendChild(criaNovaLinha(nome, email))
+
+dentro do onload criamosum forEach para percorrer o array e de fato encontrar cada um referente a cad uum >>
+
+http.onload = () => {
+  const data = http.response 
+  data.forEach(elemento => {
+   tabela.appendChild(criaNovaLinha(elemento.nome, elemento.email)) >> em cada cliente criamos uma linha especifica
+})
+}
+
+ao vermos o arquivo ele deu um erro isso prq o http.response esta devolvendo texto e nao reconhece com js válido temos que transformar essa resposta em objeto js para poder percorre-lo, usamos o JSON.parse() >>
+
+
+http.onload = () => {
+  const data = JSON.parse(http.response)
+  data.forEach(elemento => {
+   tabela.appendChild(criaNovaLinha(elemento.nome, elemento.email))
+})
+}
+
+
+Fazendo isso ele exibirá a tr na tela com os dados do cliente, criando uma situação hipotética ele repete o código se referindo a semana passada cria outra conexao outro open outro send outro localhost e gera um código enorme, temos outra forma de tratar esses dados sem tanta confusão;
+
+-------------------PROMISSES----------------
+
+Fizemos a parte inicial que era criar a comunicação e listar os clientes na tela um grande problema seria em relação a dados da semana passada no qual estaria muito dificil de manipular esse código.
+
+callback - é a função auxiliar que é disparada imediatamente logo após uma requisição assincrona.
+
+Em cima do request vamos criar uma função chamada listaClientes e colocamos todo o código abaixo ai dentro.
+iniciamos a promisse fazendo >> const promise = new Promisse((resolve, reject) =>{}) esses dois parametros vão lidar com sucesso ou erro da chamada dentro das chaves colocamos todo o codigo e no final damos o return promise >>>
+ 
+
+const listaClientes = () => {
+     const promise = new Promisse((resolve, reject) => {
+     const http = new XMLHttpRequest()
+
+     http.open('GET', 'http://localhost:3000/profile')
+
+     http.send()
+
+
+     http.onload = () => {
+     const data = JSON.parse(http.response)
+
+      data.forEach(elemento => {
+      tabela.appendChild(criaNovaLinha(elemento.nome, elemento.email))
+    })
+   }
+ })
+  return promise
+}
+
+Agora teremos pequenas modificações no onload recortamos o codigo colamos embaixo e fazemos uma verificação >>
+
+if(http.status >= 400) { reject(JSON.parse(http.response)) } else { resolve(JSON.parse(http.response)) }
+
+já com o JSON certinho, depois disso fazemos um console.log na promise e executamos a função listaClientes()
+
+no console  temos a promessa com os dados do db agr temos que fazer alguma coisa depois que a função foi executada e para isso usamos o .then() (então) que tera uma função dentro e dentro dele colamos o codigo de baixo, apenas tiramos a const data >>>
+
+listaClientes().then (data => {
+    data.forEach(elemento => {
+      tabela.appendChild(criaNovaLinha(elemento.nome, elemento.email))
+    })
+)
+
+
+feito isso ele retornará o cliente normalmente na página, a diferença é que estamos trabalhando com uma promessa o código fica muito mais legível. Esse modelo de promise foi muito usado e elaborado a partir disso foi criada a
+
+----------- fetch API------
+
+Temos XHMLHttpRequest e Promise trabalhando em conjunto, XML faz as requisições e a promise devolve uma promessa se ele der tudo certo então (.then) a gente exibe ele na tela. Ainda podemos melhorar esse  código usamos a FETCH que substitui toda a Promise e o http então apagamos todo o codigo de listaClientes() e fazemos >> 
+return fetch(`http://localhost:3000/profile`)
+
+Por default  a fetch faz um GET e devolve a promise, já podemos trabalhar em cima da resposta dela fazemos >>  
+.then(resposta => { return resposta.json() }) a resposta é um texto por isso o .json() para se tornar js válido
+
+agr vamos refatorar responsabilidades separando entre arquivos, para isso criamos uma nova pasta em admin que é controller e dentro dessa pasta listaClientes-controller.js e dentro dele colocamos >>
+
+const criaNovaLinha = (nome, email) => {
+
+  const linhaNovoCliente = document.createElement('tr')
+
+  const conteudo = `<td class="td" data-td>${nome}</td>
+  <td>${email}</td>
+  <td>
+  <ul class="tabela__botoes-controle">
+  <li><a href="../telas/edita_cliente.html" class="botao-simples botao-simples--editar">Editar</a></li>
+  <li><button class="botao-simples botao-simples--excluir" type="button">Excluir</button></li>
+  </ul>
+  </td> 
+  `
+
+  linhaNovoCliente.innerHTML = conteudo
+  return linhaNovoCliente
+}
+
+const tabela = document.querySelector('[data-tabela]') 
+
+e
+
+listaClientes().then(data => {
+  data.forEach(elemento => {
+    tabela.appendChild(criaNovaLinha(elemento.nome, elemento.email))
+  })
+})
+
+para criar a comunicação entre arquivos js usamos moódulos, export para enviar e import para receber.Então na frente de listaClientes em clinte-service colocamos export, e listaClientes-controller damos um >>
+import { listaClientes } from "url/exemplo"
+
+por enquanto estamos exportando apenas uma função mas vamos fazer isso muitas vezes para isso criaremos um objeto exportamos ele e colocamos todas as outras funçoes dentro dela. Para o acessar em outro arquivo usamos a notação de ponto clienteService.listaCliente(), trocamos o caminho do arquivo js no html e colocamos que é do tipo módulo. Ao recarregar ele dará o erro de Cross Origin Request (CORS) para resolver isso teremos que instalar o browser Sync.
+
+em uma nova guia pesquisamos npmjs.com pesquisamos browser-sync clicamos no primeiro link e procuramos o site deles e vemos o comando copiamos ele em outro terminal o colamos no linux usa se o sudo apos feito o dowload executamos o comando >>
+
+browser-sync start --server --file . --host --port 5000 --startPath admin/telas/lista_cliente.html
+
+depois é só rodar e dá tudo certo
+
+------------------Criando um cliente------------------
+em cliente sevice criamos uma nova função e dessa vez usamos método http 'POST' para enviar informações. 
+
+const criaCliente = (nome, email) => {
+  return fetch(`http://localhost:3000/profile`, {
+    method: 'POST',
+    headers: {
+     'Content-Type' : 'application/json'
+    },
+    body: JSON.stringify({
+     nome: nome,
+     email: email
+    })
+apos a requisicao feita fazemos alguma coisa então
+  }).then(resposta => {
+    return  resposta.body
+  })
+}
+
+
+depois de feito todo o processo exportamos a função com export e a inserimos em clienteService. AGR em
+ cadastraClientes-controller.js refereciamos o formulário para percorrer o DOM, No evento de submit dele pegamos os ddos com >
+
+const nome = event.target.querySelector('[data-nome]').value
+const email = event.target.querySelector('[data-email]').value
+
+depois usamos a função do clienteService
+
+clienteService.criaCliente(nome, email).then(() => {
+  window.location.href = '../telas/edicao_concluida.html'
+})
+
+----removendo um cliente --------
+
+para remover um cliente usaremo um outro método http o 'DETETE' criamos uma função >>
+
+const removeCliente = (id) => {
+  return fetch(`http://localhost:3000/profile/${id}`, {
+    method: 'DETETE'
+  })
+}
+
+dentro dela usamos o id na URL para especifica-lo e depois inserimos tbm no clienteService.
+Vamos usar essa função no listaClintes-controller.js para isso criamos uma evento de escuta na tabela ese vento deve criar uma let que tera a classe do botao excluir seu conteudo verificara se o event é igual a ela >> event.target.className == 'botao-simples botao-simples--excluir', fazemos um if se ele for igual colocamos a função de  excluir clienteService.removeCliente(id) ainda nao apaga prq temos que referenciar o id, para isso na função criaNovaLinha colocamos o id (nome, email, id) e embaixo do innerHTMl atribuimos um data atribute nele com >>> linhaNovoCliente.dataset.id = id, tendo o id já estabelecido, no if da tabela criamos uma const chamada linhaCliente que recebe >> event.target.closest('[data-id]') >>(seleciona o pai do elemento) depois >> 
+let id = linhaCliente.dataset.id que vai pegar o id do linhacliente para ai sim ele apagar tendo este como parametro do
+removeCliente(id)
+
+tabela.addEventListener('click',(event) => {
+   let botaoExcluir = event.target.className == 'botao-simples botao-simples--excluir'
+   if(botaoExcluir) {
+    const linhaCliente = event.taget.closest('[data-id]')
+    let id = linhaCliente.dataset.id
+     clienteService.removeCliente(id).then(() => {
+         linhaCliente.remove() para remover da tela
+     })
+   }
+})
+
+
+------- conexao para editar-----------
+para editar um dado usamos mais uma funcionalidade do id dentro da função criaNovaLinha  no final do href do conteudo 
+fazemos>> edita_cliente.html?id=${id} isso adicionara um id na url da pagina referente a tr deste. No arquivo atualizaClientes-controller.js criamos uma const que vai instanciar uma nova URL >>
+ const pegaURL = new URL(window.location)
+ao darmos um consolelog nessa const vemos que tem a propriedade searchParams e dentro desta um get fazemos >>
+let id  = pegaURL.searchParams.get('id') para pegar o id da pagina 
+depois referenciamos os inputs nome e email pelos dataatributes.agr em cliente service.js criamos uma nova função >>
+const detalhaCliente = (id) => {
+  return fetch(`http://localhost:3000/profile/${id}`).then(resposta => {
+    return resposta.json()
+  })
+}
+
+que vai nos retonar os dados do cliente especifico, em atualiza controller impormos essa função , a executamos e depois fazemos um .then(dado => inputNome.value = dados.nome	inputEmail.value = dados.email) para eles virem preenchidos
+
+------- editando dados-----------
+
+para atualizar temos que abrir novamente a comunicação com o servidor então criamos a função atualizaCliente ela recebera nome, email, id como parametro copiamos o fetch com id e passamos mais informações o method será PUT,
+headers : 'Content-type': 'application/json', body: JSON.stringify({nome:nome, email:email}) e
+ .then(resposta => { return resposta.json})  o exportamos no clienteSevice para usá-lo na atualizaCliente no atualizaCliente referenciamos o form com querySelector damos um addeventListenner de submit nele com um evento impedimos o comportamento padrão com preventdeault usamos a função>>
+ clienteService.atulizaCliente(inputNome.value, inputEmail.value, id) dpois que devolver uma resposta 
+.then(() => {
+   window.location.href = '../telas/edicao_concluida.html'
+})
+
+
+fazendo isso atualizamos um cliente
+
+
+
+como o js esta em constante atualização temos uma novo formato de indicar ue as funções são asíncronas usando 
+ASYNC AWAIT
+
+no arquivo listaClientes-controller.js em tabela.addListener colocamos async antes do evento dizendo que ela é uma função assíncrona antes da função que vem do clienteService colocamos await e apagamos o .then com isso ganhamos legibilidade, em baixo criamos uma const render que pega todo o conteudo do forEach que adiciona na tabela >>
+
+dizemos que ela é assincrona colocamos a função dentro de uma const colocamos await na sua frente ,  apagamos o .then data e no data do forEach colocamos cliente , e o executamos no final
+
+const render = async () => {
+const cliente = await clienteService.listaClientes().then(data => {
+	data.forEach(elemento => {
+		tabela.appendChild(criaNovaLinha(elemento.nome, elemento.email, elemento.id))
+	})
+})
+
+}
+
+reder()
+
+em atulizaClientes-controoler fazemos o mesmo . no submit do formuláio adicinamos async , await no clienteService e retira o .then,
+no clienteService.detalhaCliente podemos deixar ela autoexecutavel para isso fazemos >>
+
+(() => {
+	const pegaURL = new URL(window.location)
+
+	let id = pegaURL.searchParams.get('id')
+
+	const inputNome = document.querySelector('[data-nome]')
+	const inputEmail = document.querySelector('[data-email]')
+
+	clienteService.detalhaCliente(id).then( dados => {
+		inputNome.value = dados.nome
+		inputEmail.value = dados.email
+	})
+
+	const form = document.querySelector('[data-form]')
+
+	form.addEventListener('submit', async event => {
+		event.preventDefault()
+		await clienteService.atualizaClienae(inputNome.value, inputEmail.value, id)
+
+		window.location.href = '../telas/edicao_concluida.html'
+	})
+})()
+
+no clienteService.detalhaCliente criamos um const dados que diz que tem um await apagamos o then , tudo funcionando corretamente,
+
+---tratamento de erros---
+
+quando a url estiver quebrada o usuário não poderá acessar nos desenvolvedores sabemos o erro então devemos tratar esses erros para o usuário em listaCliente controller vmos usar try catch  no if do botão deleta fazemos>>
+
+           try {
+		const linhaCliente = event.target.closest('[data-id]')
+		let id = linhaCliente.dataset.id
+		await clienteService.removeCliente(id)
+		linhaCliente.remove()			
+		}catch(erro) {
+			window.location.href = '../telas/erro.html'	
+		}
+
+ele tenta resolver um pedaço de código e se não conseguir retorna a uma pagina de erro, colocamos no render tenta se não consegue retorna a pagina de erro, no atualiza controller antes de dados colocamos o try pegamos aquela parte de inputnome e email e o catch(erro) e um try no submit do formulario
+
+
+
+
+
+
+
+
+
+</p>
 	</section>
 
 	<script>
