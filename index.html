@@ -11,7 +11,8 @@
         padding: 0;
         margin: 0;
         box-sizing: border-box;
-		font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+          "Lucida Sans", Arial, sans-serif;
       }
 
       .caderno {
@@ -34,9 +35,9 @@
         padding: 0.6rem;
         color: white;
         width: 6rem;
-        background: steelblue;
-        border-radius: 8px;
-		border: none;
+        background-color: rgb(48, 133, 214);
+        border-radius: 0.35em;
+        border: none;
       }
 
       .delete {
@@ -44,8 +45,8 @@
         color: white;
         width: 6rem;
         background: red;
-        border-radius: 8px;
-		border: none;
+        border-radius: 0.35em;
+        border: none;
       }
 
       .buttons {
@@ -61,6 +62,7 @@
 
       textarea {
         width: 90%;
+        border-radius: 8px;
         margin: 0 auto;
         line-height: 160%;
         padding: 1rem;
@@ -76,7 +78,7 @@
 
       .dark {
         position: absolute;
-        right: 0;
+        right: 1;
         color: white;
         background: black;
         border-radius: 7px;
@@ -96,10 +98,23 @@
         position: absolute;
       }
 
-	  label {
-		border-radius: 7px;
+      .botoes:hover {
+        background-image: linear-gradient(
+          rgba(0, 0, 0, 0.1),
+          rgba(0, 0, 0, 0.1)
+        );
+      }
+
+      label {
+        border-radius: 7px;
         padding: 0.6rem;
-	  }
+      }
+
+      @media (max-width: 600px) {
+        h1 {
+          margin-left: 7rem;
+        }
+      }
     </style>
 
     <section class="caderno">
@@ -116,14 +131,15 @@
 
         <div class="between">
           <div class="buttons">
-            <input type="submit" value="Salvar" class="salvar" />
-            <button class="delete">
+            <input type="submit" value="Salvar" class="salvar botoes" />
+            <button class="delete botoes">
               <span>Excluir</span>
             </button>
           </div>
         </div>
       </form>
     </section>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
       let form = document.querySelector("form");
@@ -133,6 +149,11 @@
       let caderno = document.querySelector("body");
       let chek = document.querySelector(".chek_theme");
       let texto = document.querySelector(".texto");
+      let textarea = document.querySelector("textarea");
+
+      if (window.matchMedia("(max-width: 600px)").matches) {
+        textarea.rows = 20;
+      }
 
       form.addEventListener("submit", (event) => {
         event.preventDefault();
@@ -144,44 +165,75 @@
 
       area.innerHTML = localStorage.area;
 
-      salvar.onclick = () => {
-        let condicao = document.createElement("p");
-        condicao.classList.add("salvado");
-        form.appendChild(condicao);
-
+      function deletar() {
         if (area.value == "") {
-          alert("Não é possível salvar uma anotação vazia!");
+          Swal.fire({
+            text: "Não é possível excluir uma anotação vazia!",
+            icon: "warning",
+          });
         } else {
-          salvar.value = "salvo";
-          condicao.innerText = "Anotação salva com sucesso!";
+          Swal.fire({
+            title: "Tem certeza que deseja Excluir essa anotação?",
+            text: "Essa ação não poderá ser desfeita!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sim, deletar!",
+            cancelButtonText: "Cancelar",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              Swal.fire({
+                title: "Excluído!",
+                text: "Sua anotação foi deletada com sucesso.",
+                icon: "success",
+              });
+
+              let salvo = document.querySelector(".salvado");
+
+              if (salvo == null) {
+                area.value = "";
+              } else {
+                salvo.classList.add("none");
+              }
+              localStorage.area = "";
+              area.value = "";
+              salvar.value = "Salvar";
+            }
+          });
         }
+      }
+
+      function adicionar() {
+        if (area.value == "") {
+          Swal.fire({
+            text: "Não é possível salvar uma anotação vazia!",
+            icon: "warning",
+          });
+        } else {
+          salvar.value = "Salvo";
+          const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.onmouseenter = Swal.stopTimer;
+              toast.onmouseleave = Swal.resumeTimer;
+            },
+          });
+          Toast.fire({ icon: "success", title: "Anotação salva com sucesso!" });
+        }
+      }
+
+      salvar.onclick = () => {
+        adicionar();
       };
 
       apagar.addEventListener("click", (event) => {
-        if (area.value == "") {
-          alert("Não é possível excluir uma anotação vazia!");
-        } else {
-          let apagaOuNao = confirm(
-            "Tem certeza que deseja Excluir essa anotação? Essa ação não poderá ser desfeita!"
-          );
-
-          if (apagaOuNao == true) {
-            let salvo = document.querySelector(".salvado");
-
-            if (salvo == null) {
-              area.value = "";
-            } else {
-              salvo.classList.add("none");
-            }
-            area.value = "";
-            salvar.value = "salvar";
-          }
-        }
+        deletar();
       });
-
-      if (localStorage.area == undefined) {
-        area.value = "";
-      }
 
       chek.addEventListener("change", () => {
         if (chek.checked == true) {
@@ -213,6 +265,18 @@
           texto.textContent = "Dark Theme";
         }
       };
+
+      document.addEventListener("keydown", (event) => {
+        if (event.keyCode == 45) {
+          adicionar();
+
+          let area = form.querySelector("textarea").value;
+          localStorage.area = area;
+        }
+        if (event.keyCode == 46) {
+          deletar();
+        }
+      });
     </script>
   </body>
 </html>
