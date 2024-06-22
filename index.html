@@ -1,324 +1,344 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Caderno</title>
     <style>
-        * {
-            padding: 0;
-            margin: 0;
-            box-sizing: border-box;
-            font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
-        }
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+          "Lucida Sans", Arial, sans-serif;
+      }
 
-        .caderno {
-            display: flex;
-            padding: 1rem;
-            flex-direction: column;
-        }
+      .caderno {
+        display: flex;
+        padding: 1rem;
+        flex-direction: column;
+      }
 
+      h1 {
+        text-align: center;
+        padding-block: 1rem;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .salvar {
+        padding: 0.6rem;
+        color: white;
+        width: 6rem;
+        background-color: rgb(48, 133, 214);
+        border-radius: 0.35em;
+        border: none;
+      }
+
+      .delete {
+        padding: 0.6rem;
+        color: white;
+        width: 6rem;
+        background: red;
+        border-radius: 0.35em;
+        border: none;
+      }
+
+      .buttons {
+        padding: 1rem;
+        gap: 0.5rem;
+        display: flex;
+      }
+
+      .between {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      textarea {
+        width: 90%;
+        border-radius: 8px;
+        margin: 0 auto;
+        line-height: 160%;
+        padding: 1rem;
+      }
+
+      p {
+        position: absolute;
+      }
+
+      .none {
+        display: none;
+      }
+
+      .dark {
+        position: absolute;
+        right: 1;
+        color: white;
+        background: black;
+        border-radius: 7px;
+        margin: 1rem;
+        padding: 0.5rem 0.3rem;
+        border: inset 1px white;
+      }
+
+      .escuro {
+        background: #1b1b1c;
+        color: white;
+        transition: 1s;
+      }
+
+      .chek_theme {
+        visibility: hidden;
+        position: absolute;
+      }
+
+      .botoes:hover {
+        background-image: linear-gradient(
+          rgba(0, 0, 0, 0.1),
+          rgba(0, 0, 0, 0.1)
+        );
+      }
+
+      label {
+        border-radius: 7px;
+        padding: 0.6rem;
+      }
+
+      @media (max-width: 600px) {
         h1 {
-            text-align: center;
-            padding-block: 1rem;
+          margin-left: 7rem;
         }
+      }
 
-        form {
-            display: flex;
-            flex-direction: column;
-        }
+      /* Custom CSS for SweetAlert2 in dark mode */
+      .swal2-popup-dark {
+        background-color: #333 !important;
+        color: white !important;
+      }
 
-        .salvar {
-            padding: 0.6rem;
-            color: white;
-            width: 6rem;
-            background-color: rgb(48, 133, 214);
-            border-radius: 0.35em;
-            border: none;
-        }
+      .swal2-title-dark {
+        color: white !important;
+      }
 
-        .delete {
-            padding: 0.6rem;
-            color: white;
-            width: 6rem;
-            background: red;
-            border-radius: 0.35em;
-            border: none;
-        }
+      .swal2-confirm-dark {
+        background-color: #555 !important;
+        border-color: #555 !important;
+      }
 
-        .buttons {
-            padding: 1rem;
-            gap: 0.5rem;
-            display: flex;
-        }
-
-        .between {
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        textarea {
-            width: 90%;
-            border-radius: 8px;
-            margin: 0 auto;
-            line-height: 160%;
-            padding: 1rem;
-        }
-
-        p {
-            position: absolute;
-        }
-
-        .none {
-            display: none;
-        }
-
-        .dark {
-            position: absolute;
-            right: 1;
-            color: white;
-            background: black;
-            border-radius: 7px;
-            margin: 1rem;
-            padding: 0.5rem 0.3rem;
-            border: inset 1px white;
-        }
-
-        .escuro {
-            background: #1b1b1c;
-            color: white;
-            transition: 1s;
-        }
-
-        .chek_theme {
-            visibility: hidden;
-            position: absolute;
-        }
-
-        .botoes:hover {
-            background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
-        }
-
-        label {
-            border-radius: 7px;
-            padding: 0.6rem;
-        }
-
-        @media (max-width: 600px) {
-            h1 {
-                margin-left: 7rem;
-            }
-        }
-
-        /* Custom CSS for SweetAlert2 in dark mode */
-        .swal2-popup-dark {
-            background-color: #333 !important;
-            color: white !important;
-        }
-
-        .swal2-title-dark {
-            color: white !important;
-        }
-
-        .swal2-confirm-dark {
-            background-color: #555 !important;
-            border-color: #555 !important;
-        }
-
-        .swal2-cancel-dark {
-            background-color: #777 !important;
-            border-color: #777 !important;
-        }
+      .swal2-cancel-dark {
+        background-color: #777 !important;
+        border-color: #777 !important;
+      }
+      div:where(.swal2-container) div:where(.swal2-timer-progress-bar) {
+        background-color: rgba(255, 255, 255, 0.727)!important;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <section class="caderno">
-        <button class="dark">
-            <input class="chek_theme" type="checkbox" id="input" />
-            <label for="input">
-                <span class="texto"></span>
-            </label>
-        </button>
-        <form action="">
-            <h1>Anotações</h1>
-            <textarea name="" id="" cols="30" rows="25"></textarea>
-            <div class="between">
-                <div class="buttons">
-                    <input type="submit" value="Salvar" class="salvar botoes" />
-                    <button type="button" class="delete botoes">
-                        <span>Excluir</span>
-                    </button>
-                </div>
-            </div>
-        </form>
+      <button class="dark">
+        <input class="chek_theme" type="checkbox" id="input" />
+        <label for="input">
+          <span class="texto"></span>
+        </label>
+      </button>
+      <form action="">
+        <h1>Anotações</h1>
+        <textarea name="" id="" cols="30" rows="25"></textarea>
+        <div class="between">
+          <div class="buttons">
+            <input type="submit" value="Salvar" class="salvar botoes" />
+            <button type="button" class="delete botoes">
+              <span>Excluir</span>
+            </button>
+          </div>
+        </div>
+      </form>
     </section>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        let form = document.querySelector("form");
-        let area = form.querySelector("textarea");
-        let apagar = document.querySelector(".delete");
-        let salvar = document.querySelector(".salvar");
-        let caderno = document.querySelector("body");
-        let chek = document.querySelector(".chek_theme");
-        let texto = document.querySelector(".texto");
-        let textarea = document.querySelector("textarea");
+      let form = document.querySelector("form");
+      let area = form.querySelector("textarea");
+      let apagar = document.querySelector(".delete");
+      let salvar = document.querySelector(".salvar");
+      let caderno = document.querySelector("body");
+      let chek = document.querySelector(".chek_theme");
+      let texto = document.querySelector(".texto");
+      let textarea = document.querySelector("textarea");
 
-        if (window.matchMedia("(max-width: 600px)").matches) {
-            textarea.rows = 20;
+      if (window.matchMedia("(max-width: 600px)").matches) {
+        textarea.rows = 20;
+      }
+
+      if (!localStorage.area) {
+        area.value = "";
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        let area = form.querySelector("textarea").value;
+        localStorage.area = area;
+      });
+
+      area.innerHTML = localStorage.area;
+
+      function deletar() {
+        if (area.value == "") {
+          Swal.fire({
+            text: "Não é possível excluir uma anotação vazia!",
+            icon: "warning",
+            customClass: {
+              popup: localStorage.dark == "true" ? "swal2-popup-dark" : "",
+              title: localStorage.dark == "true" ? "swal2-title-dark" : "",
+              confirmButton:
+                localStorage.dark == "true" ? "swal2-confirm-dark" : "",
+              cancelButton:
+                localStorage.dark == "true" ? "swal2-cancel-dark" : "",
+            },
+          });
+        } else {
+          Swal.fire({
+            title: "Tem certeza que deseja Excluir essa anotação?",
+            text: "Essa ação não poderá ser desfeita!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sim, deletar!",
+            cancelButtonText: "Cancelar",
+            customClass: {
+              popup: localStorage.dark == "true" ? "swal2-popup-dark" : "",
+              title: localStorage.dark == "true" ? "swal2-title-dark" : "",
+              confirmButton:
+                localStorage.dark == "true" ? "swal2-confirm-dark" : "",
+              cancelButton:
+                localStorage.dark == "true" ? "swal2-cancel-dark" : "",
+            },
+          }).then((result) => {
+            if (result.isConfirmed) {
+              Swal.fire({
+                title: "Excluído!",
+                text: "Sua anotação foi deletada com sucesso.",
+                icon: "success",
+                customClass: {
+                  popup: localStorage.dark == "true" ? "swal2-popup-dark" : "",
+                  title: localStorage.dark == "true" ? "swal2-title-dark" : "",
+                  confirmButton:
+                    localStorage.dark == "true" ? "swal2-confirm-dark" : "",
+                  cancelButton:
+                    localStorage.dark == "true" ? "swal2-cancel-dark" : "",
+                },
+              });
+
+              let salvo = document.querySelector(".salvado");
+
+              if (salvo == null) {
+                area.value = "";
+              } else {
+                salvo.classList.add("none");
+              }
+              localStorage.area = "";
+              area.value = "";
+              salvar.value = "Salvar";
+            }
+          });
         }
+      }
 
-        form.addEventListener("submit", (event) => {
-            event.preventDefault();
-            let area = form.querySelector("textarea").value;
-            localStorage.area = area;
-        });
-
-        area.innerHTML = localStorage.area;
-
-        function deletar() {
-            if (area.value == "") {
-                Swal.fire({
-                    text: "Não é possível excluir uma anotação vazia!",
-                    icon: "warning",
-                    customClass: {
-                        popup: localStorage.dark == "true" ? 'swal2-popup-dark' : '',
-                        title: localStorage.dark == "true" ? 'swal2-title-dark' : '',
-                        confirmButton: localStorage.dark == "true" ? 'swal2-confirm-dark' : '',
-                        cancelButton: localStorage.dark == "true" ? 'swal2-cancel-dark' : ''
-                    }
-                });
-            } else {
-                Swal.fire({
-                    title: "Tem certeza que deseja Excluir essa anotação?",
-                    text: "Essa ação não poderá ser desfeita!",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Sim, deletar!",
-                    cancelButtonText: "Cancelar",
-                    customClass: {
-                        popup: localStorage.dark == "true" ? 'swal2-popup-dark' : '',
-                        title: localStorage.dark == "true" ? 'swal2-title-dark' : '',
-                        confirmButton: localStorage.dark == "true" ? 'swal2-confirm-dark' : '',
-                        cancelButton: localStorage.dark == "true" ? 'swal2-cancel-dark' : ''
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        Swal.fire({
-                            title: "Excluído!",
-                            text: "Sua anotação foi deletada com sucesso.",
-                            icon: "success",
-                            customClass: {
-                                popup: localStorage.dark == "true" ? 'swal2-popup-dark' : '',
-                                title: localStorage.dark == "true" ? 'swal2-title-dark' : '',
-                                confirmButton: localStorage.dark == "true" ? 'swal2-confirm-dark' : '',
-                                cancelButton: localStorage.dark == "true" ? 'swal2-cancel-dark' : ''
-                            }
-                        });
-
-                        let salvo = document.querySelector(".salvado");
-
-                        if (salvo == null) {
-                            area.value = "";
-                        } else {
-                            salvo.classList.add("none");
-                        }
-                        localStorage.area = "";
-                        area.value = "";
-                        salvar.value = "Salvar";
-                    }
-                });
-            }
+      function adicionar() {
+        if (area.value == "") {
+          Swal.fire({
+            text: "Não é possível salvar uma anotação vazia!",
+            icon: "warning",
+            customClass: {
+              popup: localStorage.dark == "true" ? "swal2-popup-dark" : "",
+              title: localStorage.dark == "true" ? "swal2-title-dark" : "",
+              confirmButton:
+                localStorage.dark == "true" ? "swal2-confirm-dark" : "",
+              cancelButton:
+                localStorage.dark == "true" ? "swal2-cancel-dark" : "",
+            },
+          });
+        } else {
+          const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.onmouseenter = Swal.stopTimer;
+              toast.onmouseleave = Swal.resumeTimer;
+            },
+            customClass: {
+              popup: localStorage.dark == "true" ? "swal2-popup-dark" : "",
+              title: localStorage.dark == "true" ? "swal2-title-dark" : "",
+              confirmButton:
+                localStorage.dark == "true" ? "swal2-confirm-dark" : "",
+              cancelButton:
+                localStorage.dark == "true" ? "swal2-cancel-dark" : "",
+            },
+          });
+          Toast.fire({
+            icon: "success",
+            title: "Anotação salva com sucesso!",
+          });
         }
+      }
 
-        function adicionar() {
-            if (area.value == "") {
-                Swal.fire({
-                    text: "Não é possível salvar uma anotação vazia!",
-                    icon: "warning",
-                    customClass: {
-                        popup: localStorage.dark == "true" ? 'swal2-popup-dark' : '',
-                        title: localStorage.dark == "true" ? 'swal2-title-dark' : '',
-                        confirmButton: localStorage.dark == "true" ? 'swal2-confirm-dark' : '',
-                        cancelButton: localStorage.dark == "true" ? 'swal2-cancel-dark' : ''
-                    }
-                });
-            } else {
-                salvar.value = "Salvo";
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: "top-end",
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.onmouseenter = Swal.stopTimer;
-                        toast.onmouseleave = Swal.resumeTimer;
-                    },
-                    customClass: {
-                        popup: localStorage.dark == "true" ? 'swal2-popup-dark' : '',
-                        title: localStorage.dark == "true" ? 'swal2-title-dark' : '',
-                        confirmButton: localStorage.dark == "true" ? 'swal2-confirm-dark' : '',
-                        cancelButton: localStorage.dark == "true" ? 'swal2-cancel-dark' : ''
-                    }
-                });
-                Toast.fire({
-                    icon: "success",
-                    title: "Anotação salva com sucesso!"
-                });
-            }
+      salvar.onclick = () => {
+        adicionar();
+      };
+
+      apagar.addEventListener("click", (event) => {
+        deletar();
+      });
+
+      chek.addEventListener("change", () => {
+        if (chek.checked == true) {
+          caderno.classList.toggle("escuro");
+          area.style.backgroundColor = "#181c1f";
+          area.style.color = "white";
+          localStorage.dark = "true";
+          texto.textContent = "Light Theme";
+        } else {
+          caderno.classList.remove("escuro");
+          area.style.backgroundColor = "";
+          area.style.color = "";
+          localStorage.dark = "false";
+          texto.textContent = "Dark Theme";
         }
+      });
 
-        salvar.onclick = () => {
-            adicionar();
-        };
+      window.onload = () => {
+        if (localStorage.dark == "true") {
+          chek.checked = true;
+          caderno.classList.add("escuro");
+          area.style.backgroundColor = "#181c1f";
+          area.style.color = "white";
+          texto.textContent = "Light Theme";
+        } else {
+          caderno.classList.remove("escuro");
+          area.style.backgroundColor = "";
+          area.style.color = "";
+          texto.textContent = "Dark Theme";
+        }
+      };
 
-        apagar.addEventListener("click", (event) => {
-            deletar();
-        });
-
-        chek.addEventListener("change", () => {
-            if (chek.checked == true) {
-                caderno.classList.toggle("escuro");
-                area.style.backgroundColor = "#181c1f";
-                area.style.color = "white";
-                localStorage.dark = "true";
-                texto.textContent = "Light Theme";
-            } else {
-                caderno.classList.remove("escuro");
-                area.style.backgroundColor = "";
-                area.style.color = "";
-                localStorage.dark = "false";
-                texto.textContent = "Dark Theme";
-            }
-        });
-
-        window.onload = () => {
-            if (localStorage.dark == "true") {
-                chek.checked = true;
-                caderno.classList.add("escuro");
-                area.style.backgroundColor = "#181c1f";
-                area.style.color = "white";
-                texto.textContent = "Light Theme";
-            } else {
-                caderno.classList.remove("escuro");
-                area.style.backgroundColor = "";
-                area.style.color = "";
-                texto.textContent = "Dark Theme";
-            }
-        };
-
-        document.addEventListener("keydown", (event) => {
-            if (event.keyCode == 45) {
-                adicionar();
-                let area = form.querySelector("textarea").value;
-                localStorage.area = area;
-            }
-            if (event.keyCode == 46) {
-                deletar();
-            }
-        });
+      document.addEventListener("keydown", (event) => {
+        if (event.keyCode == 45) {
+          adicionar();
+          let area = form.querySelector("textarea").value;
+          localStorage.area = area;
+        }
+        if (event.keyCode == 46) {
+          deletar();
+        }
+      });
     </script>
-</body>
+  </body>
 </html>
